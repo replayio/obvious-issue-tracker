@@ -1,1 +1,160 @@
 @import "tailwindcss";
+
+/* Dark mode driven by a `.dark` class on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Semantic design tokens (Linear-like). Feature PRs consume these via Tailwind
+ * utilities (bg-background, text-foreground, border-border, etc.) — never
+ * hardcoded hex. Light theme is the default; .dark overrides the same names.
+ */
+:root {
+  --background: #ffffff;
+  --foreground: #1c1d21;
+  --muted: #f4f5f8;
+  --muted-foreground: #6b6f76;
+  --border: #e6e7eb;
+  --input: #e6e7eb;
+  --ring: #5e6ad2;
+
+  --card: #ffffff;
+  --card-foreground: #1c1d21;
+  --popover: #ffffff;
+  --popover-foreground: #1c1d21;
+
+  --accent: #5e6ad2;
+  --accent-foreground: #ffffff;
+  --accent-muted: #eef0fb;
+
+  --sidebar: #fafbfc;
+  --sidebar-foreground: #3c4149;
+  --sidebar-muted: #8a8f98;
+  --sidebar-border: #e6e7eb;
+  --sidebar-accent: #eef0fb;
+  --sidebar-accent-foreground: #1c1d21;
+
+  --destructive: #eb5757;
+  --destructive-foreground: #ffffff;
+
+  /* Priority colors */
+  --priority-urgent: #eb5757;
+  --priority-high: #f2994a;
+  --priority-medium: #f2c94c;
+  --priority-low: #6b6f76;
+  --priority-none: #bec2c8;
+
+  /* State category colors */
+  --state-backlog: #bec2c8;
+  --state-unstarted: #95a2b3;
+  --state-started: #f2c94c;
+  --state-completed: #5e6ad2;
+  --state-canceled: #95a2b3;
+
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: #0f1011;
+  --foreground: #e3e4e6;
+  --muted: #1a1b1e;
+  --muted-foreground: #8a8f98;
+  --border: #26282d;
+  --input: #26282d;
+  --ring: #6e79e0;
+
+  --card: #161719;
+  --card-foreground: #e3e4e6;
+  --popover: #161719;
+  --popover-foreground: #e3e4e6;
+
+  --accent: #6e79e0;
+  --accent-foreground: #ffffff;
+  --accent-muted: #20223a;
+
+  --sidebar: #0b0c0d;
+  --sidebar-foreground: #c5c7ca;
+  --sidebar-muted: #6b6f76;
+  --sidebar-border: #1f2125;
+  --sidebar-accent: #1c1e2e;
+  --sidebar-accent-foreground: #e3e4e6;
+
+  --destructive: #eb5757;
+  --destructive-foreground: #ffffff;
+
+  --priority-urgent: #eb5757;
+  --priority-high: #f2994a;
+  --priority-medium: #f2c94c;
+  --priority-low: #8a8f98;
+  --priority-none: #6b6f76;
+
+  --state-backlog: #6b6f76;
+  --state-unstarted: #8a8f98;
+  --state-started: #f2c94c;
+  --state-completed: #6e79e0;
+  --state-canceled: #6b6f76;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-muted: var(--accent-muted);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-priority-urgent: var(--priority-urgent);
+  --color-priority-high: var(--priority-high);
+  --color-priority-medium: var(--priority-medium);
+  --color-priority-low: var(--priority-low);
+  --color-priority-none: var(--priority-none);
+
+  --color-state-backlog: var(--state-backlog);
+  --color-state-unstarted: var(--state-unstarted);
+  --color-state-started: var(--state-started);
+  --color-state-completed: var(--state-completed);
+  --color-state-canceled: var(--state-canceled);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family:
+      "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+

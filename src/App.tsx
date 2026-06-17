@@ -1,9 +1,16 @@
-import { cn } from "@/lib/utils";
+import { AppShell } from "@/components/AppShell";
+import { NavigationProvider } from "@/navigation";
+import { StoreProvider } from "@/store";
+import { ThemeProvider } from "@/theme";
 
 export default function App() {
   return (
-    <div className={cn("flex min-h-screen items-center justify-center")}>
-      <p className="text-sm text-neutral-500">Issue Tracker — scaffold ready.</p>
-    </div>
+    <ThemeProvider>
+      <StoreProvider>
+        <NavigationProvider>
+          <AppShell />
+        </NavigationProvider>
+      </StoreProvider>
+    </ThemeProvider>
   );
 }

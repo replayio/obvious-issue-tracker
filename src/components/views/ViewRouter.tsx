@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
 import { useNavigation, type ViewId } from "@/navigation";
+import { IssueDetailView } from "@/components/issue";
 import { MyIssuesView } from "./MyIssuesView";
 import { InboxView } from "./InboxView";
 import { IssuesView } from "./IssuesView";
@@ -15,8 +16,10 @@ const VIEWS: Record<ViewId, () => ReactElement> = {
 };
 
 export function ViewRouter() {
-  const { view } = useNavigation();
-  const View = VIEWS[view];
+  const { route } = useNavigation();
+  if (route.kind === "issue") {
+    return <IssueDetailView issueId={route.issueId} />;
+  }
+  const View = VIEWS[route.view];
   return <View />;
 }
-

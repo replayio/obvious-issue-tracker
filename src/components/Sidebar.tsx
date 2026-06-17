@@ -3,12 +3,15 @@ import {
   FolderKanban,
   Inbox,
   Layers,
+  Plus,
   User,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigation, type ViewId } from "@/navigation";
 import { useStore } from "@/store";
+import { useIssueDialog } from "@/components/issue";
+import { Button } from "./ui/Button";
 import { ThemeToggle } from "./ThemeToggle";
 
 interface NavItem {
@@ -28,6 +31,7 @@ const NAV_ITEMS: NavItem[] = [
 export function Sidebar() {
   const { view, navigate } = useNavigation();
   const { state } = useStore();
+  const { openCreate } = useIssueDialog();
   const currentUser = state.members.find((m) => m.id === state.currentUserId);
 
   return (
@@ -40,6 +44,18 @@ export function Sidebar() {
           <span className="text-sm font-semibold">Replay</span>
         </div>
         <ThemeToggle />
+      </div>
+
+      <div className="px-2 pb-1 pt-1">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => openCreate()}
+          className="w-full justify-start"
+        >
+          <Plus className="h-4 w-4" />
+          New issue
+        </Button>
       </div>
 
       <nav className="flex-1 space-y-0.5 px-2 py-2">

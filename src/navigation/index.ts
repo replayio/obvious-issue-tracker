@@ -1,4 +1,4 @@
 export { NavigationProvider } from "./NavigationProvider";
 export { useNavigation } from "./useNavigation";
-export { VIEW_IDS, isViewId, type ViewId } from "./context";
+export { VIEW_IDS, isViewId, type ViewId, type Route } from "./context";
 

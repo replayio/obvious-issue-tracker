@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/AppShell";
+import { IssueDialogProvider } from "@/components/issue";
 import { NavigationProvider } from "@/navigation";
 import { StoreProvider } from "@/store";
 import { ThemeProvider } from "@/theme";
@@ -8,7 +9,9 @@ export default function App() {
     <ThemeProvider>
       <StoreProvider>
         <NavigationProvider>
-          <AppShell />
+          <IssueDialogProvider>
+            <AppShell />
+          </IssueDialogProvider>
         </NavigationProvider>
       </StoreProvider>
     </ThemeProvider>

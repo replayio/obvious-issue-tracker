@@ -13,7 +13,7 @@ import {
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import type { Issue } from "@/types";
 import { useStore } from "@/store";
-import { useIssuesByState } from "@/components/issue/useIssuesByState";
+import { useBoardColumns } from "@/components/issue/filtering";
 import { BoardColumn } from "./BoardColumn";
 import { BoardCardBody } from "./BoardCard";
 
@@ -40,7 +40,7 @@ export function IssueBoardView({
   onOpenIssue: (id: string) => void;
 }) {
   const { state, updateIssue } = useStore();
-  const groups = useIssuesByState();
+  const groups = useBoardColumns();
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const sensors = useSensors(

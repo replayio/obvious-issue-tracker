@@ -47,7 +47,7 @@ export type StoreAction =
   | { type: "createProject"; input: Omit<Project, "id"> }
   | { type: "updateProject"; id: string; patch: Partial<Omit<Project, "id">> }
   | { type: "deleteProject"; id: string }
-  | { type: "createCycle"; input: Omit<Cycle, "id"> }
+  | { type: "createCycle"; input: Cycle }
   | { type: "updateCycle"; id: string; patch: Partial<Omit<Cycle, "id">> }
   | { type: "deleteCycle"; id: string }
   | { type: "reset" }
@@ -225,7 +225,7 @@ export function reducer(state: AppState, action: StoreAction): AppState {
     case "createCycle":
       return {
         ...state,
-        cycles: [...state.cycles, { ...action.input, id: nanoid() }],
+        cycles: [...state.cycles, action.input],
       };
 
     case "updateCycle":

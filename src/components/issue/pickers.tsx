@@ -1,6 +1,7 @@
-import { Check } from "lucide-react";
+import { Calendar, Check } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { fmtDate } from "@/lib/progress";
 import { Popover } from "@/components/ui/Popover";
 import { useLookups, useStore } from "@/store";
 import { PriorityIcon, StateIcon } from "./meta";
@@ -397,6 +398,49 @@ export function CyclePicker({
             </OptionRow>
           ))}
         </>
+      )}
+    </Popover>
+  );
+}
+
+// ---- Date -------------------------------------------------------------------
+
+export function DatePicker({
+  value,
+  onChange,
+  placeholder = "Set date",
+}: {
+  value: string | undefined; // ISO
+  onChange: (iso: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <Popover
+      trigger={(p) => (
+        <FieldTrigger {...p}>
+          <Calendar className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+          <span className={cn("truncate", !value && "text-muted-foreground")}>
+            {value ? fmtDate(value) : placeholder}
+          </span>
+        </FieldTrigger>
+      )}
+    >
+      {(close) => (
+        <input
+          type="date"
+          autoFocus
+          value={value ? value.slice(0, 10) : ""}
+          onChange={(e) => {
+            if (!e.target.value) return;
+            // Anchor to noon UTC so the calendar day round-trips regardless of TZ.
+            onChange(new Date(`${e.target.value}T12:00:00Z`).toISOString());
+            close();
+          }}
+          className={cn(
+            "w-full rounded bg-background px-2 py-1.5 text-sm text-foreground",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          )}
+        />
       )}
     </Popover>
   );

@@ -1,20 +1,22 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ChevronDown,
   ChevronRight,
-  Pencil,
   Plus,
   Trash2,
 } from "lucide-react";
 import { useStore } from "@/store";
 import { useLookups } from "@/store";
 import { computeProgress, cycleStatus, fmtDate } from "@/lib/progress";
+import { cn } from "@/lib/utils";
 import type { Cycle } from "@/types";
+import { DatePicker } from "@/components/issue/pickers";
 import { IssueRow } from "./IssueRow";
 import { ViewHeader } from "./ViewHeader";
 import { EmptyState } from "./EmptyState";
-import { CycleForm } from "./CycleForm";
+
+type CyclePatch = Partial<Omit<Cycle, "id">>;
 
 // ── Status badge ────────────────────────────────────────────────────────────
 
@@ -44,6 +46,92 @@ function CycleStatusBadge({ status }: { status: "active" | "upcoming" | "complet
   );
 }
 
+// ── Inline editors ────────────────────────────────────────────────────────────
+
+// Click-to-edit text field that commits a trimmed, non-empty value on blur or
+// Enter and reverts on Escape.
+function InlineName({
+  value,
+  onCommit,
+}: {
+  value: string;
+  onCommit: (next: string) => void;
+}) {
+  const [draft, setDraft] = useState(value);
+  useEffect(() => setDraft(value), [value]);
+
+  const commit = () => {
+    const next = draft.trim();
+    if (!next || next === value) {
+      setDraft(value);
+      return;
+    }
+    onCommit(next);
+  };
+
+  return (
+    <input
+      value={draft}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") e.currentTarget.blur();
+        else if (e.key === "Escape") {
+          setDraft(value);
+          e.currentTarget.blur();
+        }
+      }}
+      aria-label="Cycle name"
+      className={cn(
+        "-mx-1.5 min-w-0 rounded bg-transparent px-1.5 py-0.5 text-sm font-semibold text-foreground",
+        "hover:bg-muted focus:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+      )}
+    />
+  );
+}
+
+function InlineNumber({
+  value,
+  onCommit,
+}: {
+  value: number;
+  onCommit: (next: number) => void;
+}) {
+  const [draft, setDraft] = useState(String(value));
+  useEffect(() => setDraft(String(value)), [value]);
+
+  const commit = () => {
+    const n = Math.floor(Number(draft));
+    if (!Number.isFinite(n) || n < 1 || n === value) {
+      setDraft(String(value));
+      return;
+    }
+    onCommit(n);
+  };
+
+  return (
+    <input
+      type="number"
+      min={1}
+      value={draft}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") e.currentTarget.blur();
+        else if (e.key === "Escape") {
+          setDraft(String(value));
+          e.currentTarget.blur();
+        }
+      }}
+      aria-label="Cycle number"
+      className={cn(
+        "w-14 rounded bg-transparent px-1.5 py-0.5 text-sm text-foreground",
+        "hover:bg-muted focus:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+      )}
+    />
+  );
+}
+
 // ── Progress bar ─────────────────────────────────────────────────────────────
 
 function ProgressBar({ pct }: { pct: number }) {
@@ -62,11 +150,10 @@ function ProgressBar({ pct }: { pct: number }) {
 interface CycleRowProps {
   cycle: Cycle;
   onSelect: () => void;
-  onEdit: () => void;
   onDelete: () => void;
 }
 
-function CycleRow({ cycle, onSelect, onEdit, onDelete }: CycleRowProps) {
+function CycleRow({ cycle, onSelect, onDelete }: CycleRowProps) {
   const { state } = useStore();
   const { statesById } = useLookups();
   const issues = state.issues.filter((i) => i.cycleId === cycle.id);
@@ -104,14 +191,6 @@ function CycleRow({ cycle, onSelect, onEdit, onDelete }: CycleRowProps) {
         <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
           <button
             type="button"
-            onClick={(e) => { e.stopPropagation(); onEdit(); }}
-            title="Edit"
-            className="rounded p-0.5 text-muted-foreground hover:text-foreground"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </button>
-          <button
-            type="button"
             onClick={(e) => { e.stopPropagation(); onDelete(); }}
             title="Delete"
             className="rounded p-0.5 text-muted-foreground hover:text-destructive"
@@ -129,11 +208,11 @@ function CycleRow({ cycle, onSelect, onEdit, onDelete }: CycleRowProps) {
 interface CycleDetailProps {
   cycle: Cycle;
   onBack: () => void;
-  onEdit: () => void;
+  onPatch: (patch: CyclePatch) => void;
   onDelete: () => void;
 }
 
-function CycleDetail({ cycle, onBack, onEdit, onDelete }: CycleDetailProps) {
+function CycleDetail({ cycle, onBack, onPatch, onDelete }: CycleDetailProps) {
   const { state } = useStore();
   const { statesById } = useLookups();
   const status = cycleStatus(cycle.startDate, cycle.endDate);
@@ -172,16 +251,9 @@ function CycleDetail({ cycle, onBack, onEdit, onDelete }: CycleDetailProps) {
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
-        <h1 className="text-sm font-semibold">{cycle.name}</h1>
+        <InlineName value={cycle.name} onCommit={(name) => onPatch({ name })} />
         <CycleStatusBadge status={status} />
         <div className="ml-auto flex items-center gap-1">
-          <button
-            type="button"
-            onClick={onEdit}
-            className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-muted"
-          >
-            <Pencil className="h-3 w-3" /> Edit
-          </button>
           <button
             type="button"
             onClick={onDelete}
@@ -193,13 +265,31 @@ function CycleDetail({ cycle, onBack, onEdit, onDelete }: CycleDetailProps) {
       </header>
 
       <div className="flex-1 overflow-y-auto">
-        {/* Summary bar */}
+        {/* Editable summary bar */}
         <div className="border-b border-border bg-muted/30 px-5 py-3">
-          <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
-            <span>
-              {fmtDate(cycle.startDate)} – {fmtDate(cycle.endDate)}
-            </span>
-            <span>{total} issues</span>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs">
+            <label className="flex items-center gap-1.5">
+              <span className="text-muted-foreground">Cycle #</span>
+              <InlineNumber
+                value={cycle.number}
+                onCommit={(number) => onPatch({ number })}
+              />
+            </label>
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground">Start</span>
+              <DatePicker
+                value={cycle.startDate}
+                onChange={(startDate) => onPatch({ startDate })}
+              />
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground">End</span>
+              <DatePicker
+                value={cycle.endDate}
+                onChange={(endDate) => onPatch({ endDate })}
+              />
+            </div>
+            <span className="text-muted-foreground">{total} issues</span>
           </div>
           <div className="mt-2 flex items-center gap-3">
             <div className="flex-1">
@@ -257,15 +347,9 @@ function CycleDetail({ cycle, onBack, onEdit, onDelete }: CycleDetailProps) {
 
 // ── Main view ─────────────────────────────────────────────────────────────────
 
-type CycleModalState =
-  | { kind: "none" }
-  | { kind: "create" }
-  | { kind: "edit"; cycle: Cycle };
-
 export function CyclesView() {
-  const { state, deleteCycle } = useStore();
+  const { state, createCycle, updateCycle, deleteCycle } = useStore();
   const [selected, setSelected] = useState<string | null>(null);
-  const [modal, setModal] = useState<CycleModalState>({ kind: "none" });
 
   const cycles = useMemo(
     () => [...state.cycles].sort((a, b) => a.number - b.number),
@@ -276,6 +360,26 @@ export function CyclesView() {
     ? state.cycles.find((c) => c.id === selected)
     : undefined;
 
+  function handleCreate() {
+    const nextNumber = cycles.length
+      ? Math.max(...cycles.map((c) => c.number)) + 1
+      : 1;
+    // Default to a two-week cycle starting today, anchored at noon UTC.
+    const start = new Date();
+    start.setUTCHours(12, 0, 0, 0);
+    const end = new Date(start);
+    end.setUTCDate(end.getUTCDate() + 14);
+
+    const id = createCycle({
+      name: `Cycle ${nextNumber}`,
+      number: nextNumber,
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
+    });
+    // Open the new cycle so it can be edited inline via the pickers.
+    setSelected(id);
+  }
+
   function handleDelete(id: string) {
     if (!window.confirm("Delete this cycle? Issues will be unassigned.")) return;
     deleteCycle(id);
@@ -285,20 +389,12 @@ export function CyclesView() {
   // ── Detail view ──
   if (selectedCycle) {
     return (
-      <>
-        <CycleDetail
-          cycle={selectedCycle}
-          onBack={() => setSelected(null)}
-          onEdit={() => setModal({ kind: "edit", cycle: selectedCycle })}
-          onDelete={() => handleDelete(selectedCycle.id)}
-        />
-        {modal.kind === "edit" && (
-          <CycleForm
-            cycle={modal.cycle}
-            onClose={() => setModal({ kind: "none" })}
-          />
-        )}
-      </>
+      <CycleDetail
+        cycle={selectedCycle}
+        onBack={() => setSelected(null)}
+        onPatch={(patch) => updateCycle(selectedCycle.id, patch)}
+        onDelete={() => handleDelete(selectedCycle.id)}
+      />
     );
   }
 
@@ -315,7 +411,7 @@ export function CyclesView() {
         actions={
           <button
             type="button"
-            onClick={() => setModal({ kind: "create" })}
+            onClick={handleCreate}
             className="flex items-center gap-1.5 rounded-md bg-accent px-2.5 py-1.5 text-xs font-medium text-accent-foreground hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <Plus className="h-3.5 w-3.5" /> New cycle
@@ -336,7 +432,6 @@ export function CyclesView() {
                 title="Active"
                 cycles={active}
                 onSelect={setSelected}
-                onEdit={(c) => setModal({ kind: "edit", cycle: c })}
                 onDelete={(id) => handleDelete(id)}
               />
             )}
@@ -345,7 +440,6 @@ export function CyclesView() {
                 title="Upcoming"
                 cycles={upcoming}
                 onSelect={setSelected}
-                onEdit={(c) => setModal({ kind: "edit", cycle: c })}
                 onDelete={(id) => handleDelete(id)}
               />
             )}
@@ -354,23 +448,12 @@ export function CyclesView() {
                 title="Completed"
                 cycles={completed}
                 onSelect={setSelected}
-                onEdit={(c) => setModal({ kind: "edit", cycle: c })}
                 onDelete={(id) => handleDelete(id)}
               />
             )}
           </div>
         )}
       </div>
-
-      {modal.kind === "create" && (
-        <CycleForm onClose={() => setModal({ kind: "none" })} />
-      )}
-      {modal.kind === "edit" && (
-        <CycleForm
-          cycle={modal.cycle}
-          onClose={() => setModal({ kind: "none" })}
-        />
-      )}
     </section>
   );
 }
@@ -381,13 +464,11 @@ function CycleSection({
   title,
   cycles,
   onSelect,
-  onEdit,
   onDelete,
 }: {
   title: string;
   cycles: Cycle[];
   onSelect: (id: string) => void;
-  onEdit: (c: Cycle) => void;
   onDelete: (id: string) => void;
 }) {
   return (
@@ -401,7 +482,6 @@ function CycleSection({
             key={cycle.id}
             cycle={cycle}
             onSelect={() => onSelect(cycle.id)}
-            onEdit={() => onEdit(cycle)}
             onDelete={() => onDelete(cycle.id)}
           />
         ))}
@@ -409,4 +489,3 @@ function CycleSection({
     </div>
   );
 }
-

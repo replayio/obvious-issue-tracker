@@ -11,7 +11,7 @@ export interface StoreContextValue {
   createProject: (input: Omit<Project, "id">) => void;
   updateProject: (id: string, patch: Partial<Omit<Project, "id">>) => void;
   deleteProject: (id: string) => void;
-  createCycle: (input: Omit<Cycle, "id">) => void;
+  createCycle: (input: Omit<Cycle, "id">) => string;
   updateCycle: (id: string, patch: Partial<Omit<Cycle, "id">>) => void;
   deleteCycle: (id: string) => void;
   resetSeed: () => void;

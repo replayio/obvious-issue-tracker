@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useReducer, type ReactNode } from "react";
+import { nanoid } from "nanoid";
 import type { Cycle, Project } from "@/types";
 import { StoreContext, type StoreContextValue } from "./context";
 import {
@@ -35,8 +36,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       updateProject: (id: string, patch: Partial<Omit<Project, "id">>) =>
         dispatch({ type: "updateProject", id, patch }),
       deleteProject: (id: string) => dispatch({ type: "deleteProject", id }),
-      createCycle: (input: Omit<Cycle, "id">) =>
-        dispatch({ type: "createCycle", input }),
+      createCycle: (input: Omit<Cycle, "id">) => {
+        const id = nanoid();
+        dispatch({ type: "createCycle", input: { ...input, id } });
+        return id;
+      },
       updateCycle: (id: string, patch: Partial<Omit<Cycle, "id">>) =>
         dispatch({ type: "updateCycle", id, patch }),
       deleteCycle: (id: string) => dispatch({ type: "deleteCycle", id }),

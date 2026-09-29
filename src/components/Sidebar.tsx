@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   CircleDot,
   FolderKanban,
@@ -8,6 +9,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { identifyCurrentUser } from "@/lib/capture";
 import { useNavigation, type ViewId } from "@/navigation";
 import { useStore } from "@/store";
 import { useIssueDialog } from "@/components/issue";
@@ -33,6 +35,10 @@ export function Sidebar() {
   const { state } = useStore();
   const { openCreate } = useIssueDialog();
   const currentUser = state.members.find((m) => m.id === state.currentUserId);
+
+  useEffect(() => {
+    if (currentUser) identifyCurrentUser(currentUser);
+  }, [currentUser]);
 
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">

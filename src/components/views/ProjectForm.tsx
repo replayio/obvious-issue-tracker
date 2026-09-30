@@ -184,8 +184,14 @@ export function ProjectForm({ project, onClose }: ProjectFormProps) {
         {/* Dates */}
         <div className="flex gap-3">
           <div className="flex-1 space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">Start date</label>
+            <label
+              htmlFor="project-start-date"
+              className="text-xs font-medium text-muted-foreground"
+            >
+              Start date
+            </label>
             <input
+              id="project-start-date"
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
@@ -196,8 +202,14 @@ export function ProjectForm({ project, onClose }: ProjectFormProps) {
             />
           </div>
           <div className="flex-1 space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">Target date</label>
+            <label
+              htmlFor="project-target-date"
+              className="text-xs font-medium text-muted-foreground"
+            >
+              Target date
+            </label>
             <input
+              id="project-target-date"
               type="date"
               value={targetDate}
               onChange={(e) => setTargetDate(e.target.value)}

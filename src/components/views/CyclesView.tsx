@@ -9,8 +9,10 @@ import {
 } from "lucide-react";
 import { useStore } from "@/store";
 import { useLookups } from "@/store";
+import { useNavigation } from "@/navigation";
 import { computeProgress, cycleStatus, fmtDate } from "@/lib/progress";
-import type { Cycle } from "@/types";
+import type { Cycle, ID } from "@/types";
+import { Button } from "@/components/ui/Button";
 import { IssueRow } from "./IssueRow";
 import { ViewHeader } from "./ViewHeader";
 import { EmptyState } from "./EmptyState";
@@ -262,9 +264,9 @@ type CycleModalState =
   | { kind: "create" }
   | { kind: "edit"; cycle: Cycle };
 
-export function CyclesView() {
+export function CyclesView({ cycleId }: { cycleId?: ID }) {
   const { state, deleteCycle } = useStore();
-  const [selected, setSelected] = useState<string | null>(null);
+  const { navigate, openCycle } = useNavigation();
   const [modal, setModal] = useState<CycleModalState>({ kind: "none" });
 
   const cycles = useMemo(
@@ -272,14 +274,41 @@ export function CyclesView() {
     [state.cycles],
   );
 
-  const selectedCycle = selected
-    ? state.cycles.find((c) => c.id === selected)
+  const selectedCycle = cycleId
+    ? state.cycles.find((c) => c.id === cycleId)
     : undefined;
 
   function handleDelete(id: string) {
     if (!window.confirm("Delete this cycle? Issues will be unassigned.")) return;
     deleteCycle(id);
-    if (selected === id) setSelected(null);
+    if (id === cycleId) navigate("cycles");
+  }
+
+  // ── Unknown cycle (stale or deleted link) ──
+  if (cycleId && !selectedCycle) {
+    return (
+      <section className="flex h-full flex-col">
+        <header className="flex h-12 shrink-0 items-center border-b border-border px-5">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("cycles")}
+            aria-label="Back to cycles"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </header>
+        <EmptyState
+          title="Cycle not found"
+          description="This cycle may have been deleted. Head back to your cycles to continue."
+        />
+        <div className="flex justify-center pb-16">
+          <Button variant="secondary" onClick={() => navigate("cycles")}>
+            Back to cycles
+          </Button>
+        </div>
+      </section>
+    );
   }
 
   // ── Detail view ──
@@ -288,7 +317,7 @@ export function CyclesView() {
       <>
         <CycleDetail
           cycle={selectedCycle}
-          onBack={() => setSelected(null)}
+          onBack={() => navigate("cycles")}
           onEdit={() => setModal({ kind: "edit", cycle: selectedCycle })}
           onDelete={() => handleDelete(selectedCycle.id)}
         />
@@ -335,7 +364,7 @@ export function CyclesView() {
               <CycleSection
                 title="Active"
                 cycles={active}
-                onSelect={setSelected}
+                onSelect={openCycle}
                 onEdit={(c) => setModal({ kind: "edit", cycle: c })}
                 onDelete={(id) => handleDelete(id)}
               />
@@ -344,7 +373,7 @@ export function CyclesView() {
               <CycleSection
                 title="Upcoming"
                 cycles={upcoming}
-                onSelect={setSelected}
+                onSelect={openCycle}
                 onEdit={(c) => setModal({ kind: "edit", cycle: c })}
                 onDelete={(id) => handleDelete(id)}
               />
@@ -353,7 +382,7 @@ export function CyclesView() {
               <CycleSection
                 title="Completed"
                 cycles={completed}
-                onSelect={setSelected}
+                onSelect={openCycle}
                 onEdit={(c) => setModal({ kind: "edit", cycle: c })}
                 onDelete={(id) => handleDelete(id)}
               />

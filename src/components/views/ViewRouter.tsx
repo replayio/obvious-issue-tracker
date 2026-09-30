@@ -12,7 +12,7 @@ const VIEWS: Record<ViewId, () => ReactElement> = {
   inbox: InboxView,
   issues: IssuesView,
   projects: () => <ProjectsView />,
-  cycles: CyclesView,
+  cycles: () => <CyclesView />,
 };
 
 export function ViewRouter() {
@@ -22,6 +22,9 @@ export function ViewRouter() {
   }
   if (route.kind === "project") {
     return <ProjectsView projectId={route.projectId} />;
+  }
+  if (route.kind === "cycle") {
+    return <CyclesView cycleId={route.cycleId} />;
   }
   const View = VIEWS[route.view];
   return <View />;

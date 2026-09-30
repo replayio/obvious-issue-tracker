@@ -22,6 +22,8 @@ function routeFromHash(): Route {
   if (issueMatch) return { kind: "issue", issueId: issueMatch[1] };
   const projectMatch = raw.match(/^project\/(.+)$/);
   if (projectMatch) return { kind: "project", projectId: projectMatch[1] };
+  const cycleMatch = raw.match(/^cycle\/(.+)$/);
+  if (cycleMatch) return { kind: "cycle", cycleId: cycleMatch[1] };
   return { kind: "view", view: isViewId(raw) ? raw : DEFAULT_VIEW };
 }
 
@@ -58,6 +60,10 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
     window.location.hash = `/project/${projectId}`;
   }, []);
 
+  const openCycle = useCallback((cycleId: ID) => {
+    window.location.hash = `/cycle/${cycleId}`;
+  }, []);
+
   const back = useCallback(() => {
     window.location.hash = `/${lastView}`;
   }, [lastView]);
@@ -69,9 +75,10 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       navigate,
       openIssue,
       openProject,
+      openCycle,
       back,
     }),
-    [route, lastView, navigate, openIssue, openProject, back],
+    [route, lastView, navigate, openIssue, openProject, openCycle, back],
   );
 
   return (

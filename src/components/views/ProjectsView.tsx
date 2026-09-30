@@ -33,7 +33,7 @@ const STATUS_LABEL: Record<ProjectStatus, string> = {
 const STATUS_COLOR: Record<ProjectStatus, string> = {
   backlog: "var(--state-backlog)",
   planned: "var(--state-unstarted)",
-  in_progress: "var(--state-started)",
+  in_progress: "var(--state-started-text)",
   completed: "var(--state-completed)",
   canceled: "var(--state-canceled)",
 };

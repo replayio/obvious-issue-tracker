@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { MessageSquare } from "lucide-react";
+import { readableTextColor } from "@/lib/avatar-contrast";
 import { cn } from "@/lib/utils";
 import { useLookups, useStore } from "@/store";
 import { Button } from "@/components/ui/Button";
@@ -33,8 +34,11 @@ function MemberAvatar({ member }: { member: Member | undefined }) {
   }
   return (
     <span
-      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold text-white"
-      style={{ backgroundColor: member.avatarColor }}
+      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold"
+      style={{
+        backgroundColor: member.avatarColor,
+        color: readableTextColor(member.avatarColor),
+      }}
       title={member.name}
     >
       {member.initials}

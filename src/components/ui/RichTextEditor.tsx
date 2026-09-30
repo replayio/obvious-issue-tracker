@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import type { Editor } from "@tiptap/react";
+import { AllSelection, TextSelection } from "@tiptap/pm/state";
 import StarterKit from "@tiptap/starter-kit";
 import { Code as CodeExtension } from "@tiptap/extension-code";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -31,6 +32,24 @@ const PROSE_CLASS = cn(
   "prose-editor max-w-none text-sm leading-relaxed text-foreground",
   "focus:outline-none",
 );
+
+// TipTap's toggleList normalizes a whole-doc selection when unlisting, but
+// leaves the Ctrl+A AllSelection in place when creating a list. An AllSelection
+// reads as "not inside a list" — so the list toggle drops its pressed state
+// even though the list was created — and typing would replace the entire
+// document. Collapse it to a text selection spanning the first block, mirroring
+// TipTap's own createInnerSelectionForWholeDocList.
+function settleListSelection(editor: Editor) {
+  const { selection, doc } = editor.state;
+  if (!(selection instanceof AllSelection)) return;
+  const first = doc.firstChild;
+  if (!first) return;
+  editor.view.dispatch(
+    editor.state.tr.setSelection(
+      TextSelection.between(doc.resolve(1), doc.resolve(first.nodeSize - 1)),
+    ),
+  );
+}
 
 export function RichTextEditor({
   value,
@@ -149,13 +168,19 @@ function EditorToolbar({ editor }: { editor: Editor }) {
       icon: List,
       label: "Bullet list",
       isActive: state.bulletList,
-      run: () => editor.chain().focus().toggleBulletList().run(),
+      run: () => {
+        editor.chain().focus().toggleBulletList().run();
+        settleListSelection(editor);
+      },
     },
     {
       icon: ListOrdered,
       label: "Numbered list",
       isActive: state.orderedList,
-      run: () => editor.chain().focus().toggleOrderedList().run(),
+      run: () => {
+        editor.chain().focus().toggleOrderedList().run();
+        settleListSelection(editor);
+      },
     },
   ];
 

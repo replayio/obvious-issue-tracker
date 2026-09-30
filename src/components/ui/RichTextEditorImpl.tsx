@@ -101,7 +101,8 @@ export function RichTextEditor({
   }, [editor, value]);
 
   useEffect(() => {
-    editor?.setEditable(editable);
+    if (!editor || editor.isDestroyed) return;
+    editor.setEditable(editable);
   }, [editor, editable]);
 
   if (!editor) return null;

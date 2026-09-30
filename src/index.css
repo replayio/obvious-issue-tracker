@@ -52,6 +52,10 @@
      13%-alpha tint. Dark theme keeps its own value. */
   --state-unstarted: #5c6773;
   --state-started: #f2c94c;
+  /* Text-safe companion for --state-started: the raw amber fails AA as 12px
+     status text on white (1.59:1); #8a5c00 measures 5.81:1. Dark mode keeps
+     the raw amber (11.3:1 on the dark card), so it redefines this below. */
+  --state-started-text: #8a5c00;
   --state-completed: #5e6ad2;
   --state-canceled: #95a2b3;
 
@@ -96,6 +100,8 @@
   --state-backlog: #6b6f76;
   --state-unstarted: #8a8f98;
   --state-started: #f2c94c;
+  /* Raw amber reads at 11.3:1 on the dark card — no darkening needed. */
+  --state-started-text: #f2c94c;
   --state-completed: #6e79e0;
   --state-canceled: #6b6f76;
 }
@@ -137,6 +143,7 @@
   --color-state-backlog: var(--state-backlog);
   --color-state-unstarted: var(--state-unstarted);
   --color-state-started: var(--state-started);
+  --color-state-started-text: var(--state-started-text);
   --color-state-completed: var(--state-completed);
   --color-state-canceled: var(--state-canceled);
 

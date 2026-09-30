@@ -41,13 +41,13 @@ export function Sidebar() {
   }, [currentUser]);
 
   return (
-    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
-      <div className="flex items-center justify-between px-4 py-3">
+    <aside className="flex h-full w-18 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:w-60">
+      <div className="flex items-center justify-between px-2 py-3 md:px-4">
         <div className="flex items-center gap-2">
           <div className="flex h-6 w-6 items-center justify-center rounded bg-accent text-xs font-semibold text-accent-foreground">
             R
           </div>
-          <span className="text-sm font-semibold">Replay</span>
+          <span className="hidden text-sm font-semibold md:inline">Replay</span>
         </div>
         <ThemeToggle />
       </div>
@@ -57,10 +57,11 @@ export function Sidebar() {
           variant="secondary"
           size="sm"
           onClick={() => openCreate()}
-          className="w-full justify-start"
+          aria-label="New issue"
+          className="w-full justify-center md:justify-start"
         >
           <Plus className="h-4 w-4" />
-          New issue
+          <span className="hidden md:inline">New issue</span>
         </Button>
       </div>
 
@@ -74,8 +75,9 @@ export function Sidebar() {
               type="button"
               onClick={() => navigate(item.id)}
               aria-current={active ? "page" : undefined}
+              aria-label={item.label}
               className={cn(
-                "flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm transition-colors",
+                "flex w-full items-center justify-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm transition-colors md:justify-start",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 active
                   ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
@@ -83,21 +85,21 @@ export function Sidebar() {
               )}
             >
               <Icon className="h-4 w-4 shrink-0 text-sidebar-muted" />
-              <span>{item.label}</span>
+              <span className="hidden md:inline">{item.label}</span>
             </button>
           );
         })}
       </nav>
 
       {currentUser && (
-        <div className="flex items-center gap-2 border-t border-sidebar-border px-4 py-3">
+        <div className="flex items-center justify-center gap-2 border-t border-sidebar-border px-2 py-3 md:justify-start md:px-4">
           <span
             className="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-semibold text-white"
             style={{ backgroundColor: currentUser.avatarColor }}
           >
             {currentUser.initials}
           </span>
-          <span className="truncate text-xs text-sidebar-muted">
+          <span className="hidden truncate text-xs text-sidebar-muted md:inline">
             {currentUser.name}
           </span>
         </div>

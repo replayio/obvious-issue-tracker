@@ -47,7 +47,10 @@
 
   /* State category colors */
   --state-backlog: #bec2c8;
-  --state-unstarted: #95a2b3;
+  /* 12px status text ("Planned" on white cards, cycle "Upcoming" badge) needs
+     >= 4.5:1 AA; #5c6773 gives 5.76:1 on #ffffff and 4.82:1 on the badge's
+     13%-alpha tint. Dark theme keeps its own value. */
+  --state-unstarted: #5c6773;
   --state-started: #f2c94c;
   --state-completed: #5e6ad2;
   --state-canceled: #95a2b3;

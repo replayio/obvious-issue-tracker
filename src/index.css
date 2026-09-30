@@ -28,7 +28,9 @@
 
   --sidebar: #fafbfc;
   --sidebar-foreground: #3c4149;
-  --sidebar-muted: #8a8f98;
+  /* 12px text on --sidebar needs >= 4.5:1 AA; #6b6f76 gives 4.87:1 on #fafbfc.
+     Kept in sync with --muted-foreground. */
+  --sidebar-muted: #6b6f76;
   --sidebar-border: #e6e7eb;
   --sidebar-accent: #eef0fb;
   --sidebar-accent-foreground: #1c1d21;
@@ -73,7 +75,8 @@
 
   --sidebar: #0b0c0d;
   --sidebar-foreground: #c5c7ca;
-  --sidebar-muted: #6b6f76;
+  /* #8a8f98 gives 6.03:1 on #0b0c0d — same AA bar as the light value. */
+  --sidebar-muted: #8a8f98;
   --sidebar-border: #1f2125;
   --sidebar-accent: #1c1e2e;
   --sidebar-accent-foreground: #e3e4e6;

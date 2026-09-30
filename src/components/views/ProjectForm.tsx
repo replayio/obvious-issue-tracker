@@ -74,10 +74,14 @@ export function ProjectForm({ project, onClose }: ProjectFormProps) {
       <form onSubmit={handleSubmit} className="space-y-3">
         {/* Name */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-muted-foreground">
+          <label
+            htmlFor="project-name"
+            className="text-xs font-medium text-muted-foreground"
+          >
             Name <span className="text-destructive">*</span>
           </label>
           <input
+            id="project-name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}

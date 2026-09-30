@@ -22,10 +22,12 @@ export function isViewId(value: string): value is ViewId {
 }
 
 // The active surface. A view is one of the sidebar destinations; an issue
-// route opens the detail view for a single issue (`#/issue/:id`).
+// route opens the detail view for a single issue (`#/issue/:id`); a project
+// route opens the detail view for a single project (`#/project/:id`).
 export type Route =
   | { kind: "view"; view: ViewId }
-  | { kind: "issue"; issueId: ID };
+  | { kind: "issue"; issueId: ID }
+  | { kind: "project"; projectId: ID };
 
 export interface NavigationContextValue {
   route: Route;
@@ -34,6 +36,7 @@ export interface NavigationContextValue {
   view: ViewId;
   navigate: (view: ViewId) => void;
   openIssue: (issueId: ID) => void;
+  openProject: (projectId: ID) => void;
   back: () => void;
 }
 

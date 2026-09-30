@@ -46,7 +46,11 @@
   --priority-none: #bec2c8;
 
   /* State category colors */
-  --state-backlog: #bec2c8;
+  --state-backlog: #5e6470;
+  /* 12px status text ("Backlog" on white cards, project summary bar) needs
+     >= 4.5:1 AA; #5e6470 gives 5.94:1 on #ffffff and 5.80:1 on the summary
+     bar's muted/30 tint, and stays distinct from --muted-foreground (#6b6f76)
+     and the Planned label (#5c6773). Dark theme keeps its own value. */
   /* 12px status text ("Planned" on white cards, cycle "Upcoming" badge) needs
      >= 4.5:1 AA; #5c6773 gives 5.76:1 on #ffffff and 4.82:1 on the badge's
      13%-alpha tint. Dark theme keeps its own value. */

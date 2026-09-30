@@ -11,8 +11,10 @@ import {
 import { readableTextColor } from "@/lib/avatar-contrast";
 import { useStore } from "@/store";
 import { useLookups } from "@/store";
+import { useNavigation } from "@/navigation";
 import { computeProgress, fmtDate } from "@/lib/progress";
-import type { Issue, Project, ProjectStatus, WorkflowState } from "@/types";
+import type { ID, Issue, Project, ProjectStatus, WorkflowState } from "@/types";
+import { Button } from "@/components/ui/Button";
 import { IssueRow } from "./IssueRow";
 import { ViewHeader } from "./ViewHeader";
 import { EmptyState } from "./EmptyState";
@@ -324,20 +326,47 @@ type ModalState =
   | { kind: "create" }
   | { kind: "edit"; project: Project };
 
-export function ProjectsView() {
+export function ProjectsView({ projectId }: { projectId?: ID }) {
   const { state, deleteProject } = useStore();
   const { statesById } = useLookups();
-  const [selected, setSelected] = useState<string | null>(null);
+  const { navigate, openProject } = useNavigation();
   const [modal, setModal] = useState<ModalState>({ kind: "none" });
 
-  const selectedProject = selected
-    ? state.projects.find((p) => p.id === selected)
+  const selectedProject = projectId
+    ? state.projects.find((p) => p.id === projectId)
     : undefined;
 
   function handleDelete(id: string) {
     if (!window.confirm("Delete this project? Issues will be unassigned.")) return;
     deleteProject(id);
-    if (selected === id) setSelected(null);
+    if (id === projectId) navigate("projects");
+  }
+
+  // ── Unknown project (stale or deleted link) ──
+  if (projectId && !selectedProject) {
+    return (
+      <section className="flex h-full flex-col">
+        <header className="flex h-12 shrink-0 items-center border-b border-border px-5">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("projects")}
+            aria-label="Back to projects"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </header>
+        <EmptyState
+          title="Project not found"
+          description="This project may have been deleted. Head back to your projects to continue."
+        />
+        <div className="flex justify-center pb-16">
+          <Button variant="secondary" onClick={() => navigate("projects")}>
+            Back to projects
+          </Button>
+        </div>
+      </section>
+    );
   }
 
   // ── Detail view ──
@@ -346,7 +375,7 @@ export function ProjectsView() {
       <>
         <ProjectDetail
           project={selectedProject}
-          onBack={() => setSelected(null)}
+          onBack={() => navigate("projects")}
           onEdit={() => setModal({ kind: "edit", project: selectedProject })}
           onDelete={() => handleDelete(selectedProject.id)}
         />
@@ -395,7 +424,7 @@ export function ProjectsView() {
                   project={project}
                   issues={projectIssues}
                   statesById={statesById}
-                  onSelect={() => setSelected(project.id)}
+                  onSelect={() => openProject(project.id)}
                   onEdit={() => setModal({ kind: "edit", project })}
                   onDelete={() => handleDelete(project.id)}
                 />

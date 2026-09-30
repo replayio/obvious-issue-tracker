@@ -20,6 +20,8 @@ function routeFromHash(): Route {
   const raw = window.location.hash.replace(/^#\/?/, "");
   const issueMatch = raw.match(/^issue\/(.+)$/);
   if (issueMatch) return { kind: "issue", issueId: issueMatch[1] };
+  const projectMatch = raw.match(/^project\/(.+)$/);
+  if (projectMatch) return { kind: "project", projectId: projectMatch[1] };
   return { kind: "view", view: isViewId(raw) ? raw : DEFAULT_VIEW };
 }
 
@@ -52,6 +54,10 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
     window.location.hash = `/issue/${issueId}`;
   }, []);
 
+  const openProject = useCallback((projectId: ID) => {
+    window.location.hash = `/project/${projectId}`;
+  }, []);
+
   const back = useCallback(() => {
     window.location.hash = `/${lastView}`;
   }, [lastView]);
@@ -62,9 +68,10 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       view: route.kind === "view" ? route.view : lastView,
       navigate,
       openIssue,
+      openProject,
       back,
     }),
-    [route, lastView, navigate, openIssue, back],
+    [route, lastView, navigate, openIssue, openProject, back],
   );
 
   return (

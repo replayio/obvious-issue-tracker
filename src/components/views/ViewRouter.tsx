@@ -11,7 +11,7 @@ const VIEWS: Record<ViewId, () => ReactElement> = {
   "my-issues": MyIssuesView,
   inbox: InboxView,
   issues: IssuesView,
-  projects: ProjectsView,
+  projects: () => <ProjectsView />,
   cycles: CyclesView,
 };
 
@@ -19,6 +19,9 @@ export function ViewRouter() {
   const { route } = useNavigation();
   if (route.kind === "issue") {
     return <IssueDetailView issueId={route.issueId} />;
+  }
+  if (route.kind === "project") {
+    return <ProjectsView projectId={route.projectId} />;
   }
   const View = VIEWS[route.view];
   return <View />;

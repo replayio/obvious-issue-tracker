@@ -15,6 +15,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@fullstory/browser": "^2.1.2",
     "@replayio/self-healing-capture": "^0.1.0",
+    "@tiptap/extension-code": "^3.27.0",
     "@tiptap/extension-placeholder": "^3.27.0",
     "@tiptap/extension-underline": "^3.27.0",
     "@tiptap/react": "^3.27.0",

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import type { Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { Code as CodeExtension } from "@tiptap/extension-code";
 import Placeholder from "@tiptap/extension-placeholder";
 import {
   Bold,
@@ -44,7 +45,11 @@ export function RichTextEditor({
   const editor = useEditor({
     editable,
     extensions: [
-      StarterKit,
+      StarterKit.configure({ code: false }),
+      // Inline code must layer on top of other marks instead of replacing them.
+      // TipTap's Code mark declares excludes: "_" (exclude ALL marks), so
+      // toggling it wiped bold/italic/underline from the selection.
+      CodeExtension.extend({ excludes: "" }),
       Placeholder.configure({ placeholder }),
     ],
     content: value || "",
@@ -164,6 +169,11 @@ function EditorToolbar({ editor }: { editor: Editor }) {
           aria-label={label}
           aria-pressed={isActive}
           onClick={run}
+          // Keep focus (and the selection) in the editor while clicking toolbar
+          // buttons: the default mousedown blurs the editor, and the refocus
+          // race could leave a list toggle acting on a stale selection (first
+          // click on Bullet list after Ctrl+A was a no-op).
+          onMouseDown={(e) => e.preventDefault()}
           className={cn(
             "flex h-7 w-7 items-center justify-center rounded transition-colors",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",

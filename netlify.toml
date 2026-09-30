@@ -6,3 +6,13 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Build output under /assets/ is content-hashed by Vite, so it is safe to cache
+# immutably: repeat navigations reuse the cached bytes instead of re-downloading
+# (bug-mun3jox6-810l). index.html is not under /assets/ and keeps Netlify's
+# default must-revalidate, so deploys are picked up immediately and SPA routing
+# is unaffected.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

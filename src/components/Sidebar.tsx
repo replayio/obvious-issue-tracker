@@ -8,6 +8,7 @@ import {
   User,
   type LucideIcon,
 } from "lucide-react";
+import { readableTextColor } from "@/lib/avatar-contrast";
 import { cn } from "@/lib/utils";
 import { identifyCurrentUser } from "@/lib/capture";
 import { useNavigation, type ViewId } from "@/navigation";
@@ -94,8 +95,11 @@ export function Sidebar() {
       {currentUser && (
         <div className="flex items-center justify-center gap-2 border-t border-sidebar-border px-2 py-3 md:justify-start md:px-4">
           <span
-            className="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-semibold text-white"
-            style={{ backgroundColor: currentUser.avatarColor }}
+            className="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-semibold"
+            style={{
+              backgroundColor: currentUser.avatarColor,
+              color: readableTextColor(currentUser.avatarColor),
+            }}
           >
             {currentUser.initials}
           </span>

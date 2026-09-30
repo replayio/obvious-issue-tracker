@@ -8,6 +8,7 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
+import { readableTextColor } from "@/lib/avatar-contrast";
 import { useStore } from "@/store";
 import { useLookups } from "@/store";
 import { computeProgress, fmtDate } from "@/lib/progress";
@@ -140,8 +141,11 @@ function ProjectCard({
         {lead && (
           <span className="flex items-center gap-1.5 ml-auto">
             <span
-              className="flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-semibold text-white"
-              style={{ backgroundColor: lead.avatarColor }}
+              className="flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-semibold"
+              style={{
+                backgroundColor: lead.avatarColor,
+                color: readableTextColor(lead.avatarColor),
+              }}
             >
               {lead.initials}
             </span>
@@ -238,8 +242,11 @@ function ProjectDetail({ project, onBack, onEdit, onDelete }: ProjectDetailProps
             {lead && (
               <span className="flex items-center gap-1">
                 <span
-                  className="flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-semibold text-white"
-                  style={{ backgroundColor: lead.avatarColor }}
+                  className="flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-semibold"
+                  style={{
+                    backgroundColor: lead.avatarColor,
+                    color: readableTextColor(lead.avatarColor),
+                  }}
                 >
                   {lead.initials}
                 </span>

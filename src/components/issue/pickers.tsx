@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import type { ReactNode } from "react";
+import { readableTextColor } from "@/lib/avatar-contrast";
 import { cn } from "@/lib/utils";
 import { Popover } from "@/components/ui/Popover";
 import { useLookups, useStore } from "@/store";
@@ -81,8 +82,8 @@ function Avatar({
 }) {
   return (
     <span
-      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[9px] font-semibold text-white"
-      style={{ backgroundColor: color }}
+      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[9px] font-semibold"
+      style={{ backgroundColor: color, color: readableTextColor(color) }}
     >
       {initials}
     </span>

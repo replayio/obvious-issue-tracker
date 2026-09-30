@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useLookups, useStore } from "@/store";
+import { readableTextColor } from "@/lib/avatar-contrast";
 import type { Issue, Priority } from "@/types";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, type DropdownItem } from "./DropdownMenu";
@@ -101,8 +102,8 @@ function Avatar({
 }) {
   return (
     <span
-      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[9px] font-semibold text-white"
-      style={{ backgroundColor: color }}
+      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[9px] font-semibold"
+      style={{ backgroundColor: color, color: readableTextColor(color) }}
       title={title}
     >
       {initials}

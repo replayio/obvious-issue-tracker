@@ -46,7 +46,10 @@
   /* State category colors */
   --state-backlog: #bec2c8;
   --state-unstarted: #95a2b3;
-  --state-started: #f2c94c;
+  /* Darkened from #f2c94c: this token doubles as 12px status-text color on light
+     surfaces, where the bright amber failed WCAG AA (1.59:1 on white). The dark
+     theme keeps #f2c94c (~11.8:1 on its near-black background). */
+  --state-started: #b45309;
   --state-completed: #5e6ad2;
   --state-canceled: #95a2b3;
 

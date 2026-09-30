@@ -128,8 +128,15 @@ export function ProjectForm({ project, onClose }: ProjectFormProps) {
         {/* Status + Lead row */}
         <div className="flex gap-3">
           <div className="flex-1 space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">Status</label>
+            <label
+              htmlFor="project-status"
+              className="text-xs font-medium text-muted-foreground"
+            >
+              Status
+            </label>
             <select
+              id="project-status"
+              name="status"
               value={status}
               onChange={(e) => setStatus(e.target.value as ProjectStatus)}
               className={cn(

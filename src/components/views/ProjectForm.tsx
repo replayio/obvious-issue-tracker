@@ -112,8 +112,14 @@ export function ProjectForm({ project, onClose }: ProjectFormProps) {
 
         {/* Description */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-muted-foreground">Description</label>
+          <label
+            htmlFor="project-description"
+            className="text-xs font-medium text-muted-foreground"
+          >
+            Description
+          </label>
           <textarea
+            id="project-description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={2}

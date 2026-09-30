@@ -93,10 +93,14 @@ export function ProjectForm({ project, onClose }: ProjectFormProps) {
 
         {/* Key */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-muted-foreground">
+          <label
+            htmlFor="project-key"
+            className="text-xs font-medium text-muted-foreground"
+          >
             Key <span className="text-destructive">*</span>
           </label>
           <input
+            id="project-key"
             type="text"
             value={key}
             onChange={(e) => setKey(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))}

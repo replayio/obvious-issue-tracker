@@ -46,7 +46,11 @@
   --priority-none: #bec2c8;
 
   /* State category colors */
-  --state-backlog: #bec2c8;
+  /* 12px status text ("Backlog" on white project cards) needs >= 4.5:1 AA;
+     #5c6773 gives 5.76:1 on #ffffff — the same text-safe gray --state-unstarted
+     already uses. The pale marker gray remains in seed.ts issue-state dots.
+     Dark theme keeps its own value. */
+  --state-backlog: #5c6773;
   /* 12px status text ("Planned" on white cards, cycle "Upcoming" badge) needs
      >= 4.5:1 AA; #5c6773 gives 5.76:1 on #ffffff and 4.82:1 on the badge's
      13%-alpha tint. Dark theme keeps its own value. */

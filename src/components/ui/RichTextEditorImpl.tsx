@@ -1,6 +1,6 @@
 // Reached only through the lazy wrapper in ./RichTextEditor — this module is
 // a dynamic-import chunk, never part of the initial bundle.
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import type { Editor } from "@tiptap/react";
 import { AllSelection, TextSelection } from "@tiptap/pm/state";
@@ -35,6 +35,47 @@ const PROSE_CLASS = cn(
   "focus:outline-none",
 );
 
+// Creating a TipTap editor costs ~20ms of synchronous main-thread work per
+// instance, and the issue detail page mounts two at once (description plus
+// comment composer). When that lands in the navigation commit, opening an
+// issue blocks the main thread for ~53ms — about three dropped frames
+// (bug-mupr5tsb-7yuz). Editors therefore wait for the navigation frame to
+// actually paint (double rAF) before mounting, while the shell renders a
+// static preview of the same chrome in the meantime.
+function usePostPaintMount(): boolean {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    let second = 0;
+    const first = requestAnimationFrame(() => {
+      second = requestAnimationFrame(() => setMounted(true));
+    });
+    return () => {
+      cancelAnimationFrame(first);
+      cancelAnimationFrame(second);
+    };
+  }, []);
+
+  return mounted;
+}
+
+// Mirrors ActivityFeed's emptiness check: TipTap HTML with no visible text
+// still serializes to wrapped empty tags.
+function isEmptyHtml(html: string): boolean {
+  return html.replace(/<[^>]*>/g, "").trim().length === 0;
+}
+
+// One-frame stand-in for the toolbar that reserves its exact height so the
+// editor swap does not shift the layout below it.
+const TOOLBAR_SKELETON = (
+  <div
+    aria-hidden
+    className="flex flex-wrap items-center gap-0.5 rounded-md border border-border bg-muted/40 p-1"
+  >
+    <div className="h-7 w-7 rounded" />
+  </div>
+);
+
 // TipTap's toggleList normalizes a whole-doc selection when unlisting, but
 // leaves the Ctrl+A AllSelection in place when creating a list. An AllSelection
 // reads as "not inside a list" — so the list toggle drops its pressed state
@@ -53,7 +94,39 @@ function settleListSelection(editor: Editor) {
   );
 }
 
-export function RichTextEditor({
+export function RichTextEditor(props: RichTextEditorProps) {
+  const { value, editable, className, placeholder, minHeight = "6rem" } = props;
+  const mountEditor = usePostPaintMount();
+
+  if (!mountEditor) {
+    return (
+      <div className={cn("flex flex-col gap-2", className)}>
+        {editable && TOOLBAR_SKELETON}
+        <div
+          className={cn(
+            PROSE_CLASS,
+            "rounded-md",
+            editable && "border border-input bg-background px-3 py-2",
+          )}
+          style={{ minHeight }}
+          // Same trust model as the editor itself and ActivityFeed's comments:
+          // TipTap-produced HTML rendered where the editor would render it.
+          // An empty document mirrors TipTap's placeholder paragraph markup
+          // so the swap is pixel-identical.
+          dangerouslySetInnerHTML={{
+            __html: isEmptyHtml(value || "")
+              ? `<p class="is-editor-empty" data-placeholder="${placeholder ?? "Add a description…"}"></p>`
+              : value,
+          }}
+        />
+      </div>
+    );
+  }
+
+  return <EditorInstance {...props} />;
+}
+
+function EditorInstance({
   value,
   onChange,
   onBlur,

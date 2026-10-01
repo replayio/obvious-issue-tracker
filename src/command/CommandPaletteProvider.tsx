@@ -1,4 +1,6 @@
 import {
+  lazy,
+  Suspense,
   useCallback,
   useMemo,
   useState,
@@ -10,8 +12,13 @@ import {
   CommandPaletteContext,
   type CommandPaletteContextValue,
 } from "./context";
-import { CommandPalette } from "./CommandPalette";
 import { useKeyBindings, type KeyBinding } from "./shortcuts";
+
+// Dynamically imported: the palette only opens on Cmd+K or "/", so it must not
+// weigh down the initial bundle (bug-mun3jox6-810l).
+const CommandPalette = lazy(() =>
+  import("./CommandPalette").then((m) => ({ default: m.CommandPalette })),
+);
 
 // Owns command-palette open state, registers the global keyboard shortcuts, and
 // renders the palette overlay. Mounted once near the app root, inside the
@@ -52,7 +59,11 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
   return (
     <CommandPaletteContext.Provider value={value}>
       {children}
-      {open && <CommandPalette onClose={closePalette} />}
+      {open && (
+        <Suspense fallback={null}>
+          <CommandPalette onClose={closePalette} />
+        </Suspense>
+      )}
     </CommandPaletteContext.Provider>
   );
 }

@@ -1,9 +1,14 @@
 import { Check } from "lucide-react";
 import type { ReactNode } from "react";
 import { readableTextColor } from "@/lib/avatar-contrast";
+import {
+  chipSurfaceForTheme,
+  readableLabelChipTextColor,
+} from "@/lib/label-contrast";
 import { cn } from "@/lib/utils";
 import { Popover } from "@/components/ui/Popover";
 import { useLookups, useStore } from "@/store";
+import { useTheme } from "@/theme";
 import { PriorityIcon, StateIcon } from "./meta";
 import { PRIORITY_LABEL, PRIORITY_ORDER } from "./priority";
 import type { ID, Priority } from "@/types";
@@ -236,6 +241,7 @@ export function LabelPicker({
 }) {
   const { state } = useStore();
   const { labelsById } = useLookups();
+  const { theme } = useTheme();
   const selected = value
     .map((id) => labelsById.get(id))
     .filter((l): l is NonNullable<typeof l> => Boolean(l));
@@ -260,7 +266,10 @@ export function LabelPicker({
                   className="rounded-full px-2 py-0.5 text-[10px] font-medium"
                   style={{
                     backgroundColor: `${label.color}22`,
-                    color: label.color,
+                    color: readableLabelChipTextColor(
+                      label.color,
+                      chipSurfaceForTheme(theme),
+                    ),
                   }}
                 >
                   {label.name}

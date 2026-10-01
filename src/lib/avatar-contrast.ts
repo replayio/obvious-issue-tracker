@@ -10,7 +10,7 @@ const AA_MIN_CONTRAST = 4.5;
 
 type Rgb = [number, number, number];
 
-function parseColor(color: string): Rgb | null {
+export function parseColor(color: string): Rgb | null {
   const hex = color.trim().replace(/^#/, "");
   if (/^[0-9a-fA-F]{6}$/.test(hex) || /^[0-9a-fA-F]{3}$/.test(hex)) {
     const full =
@@ -32,7 +32,7 @@ function parseColor(color: string): Rgb | null {
 }
 
 // WCAG 2.x relative luminance of an sRGB triplet.
-function relativeLuminance([r, g, b]: Rgb): number {
+export function relativeLuminance([r, g, b]: Rgb): number {
   const channel = (value: number) => {
     const s = value / 255;
     return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
@@ -40,7 +40,7 @@ function relativeLuminance([r, g, b]: Rgb): number {
   return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
 }
 
-function contrastRatio(a: number, b: number): number {
+export function contrastRatio(a: number, b: number): number {
   return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 }
 

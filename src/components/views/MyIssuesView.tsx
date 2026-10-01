@@ -1,10 +1,12 @@
 import { useStore } from "@/store";
+import { useOpenIssue } from "@/components/issue/useOpenIssue";
 import { ViewHeader } from "./ViewHeader";
 import { IssueRow } from "./IssueRow";
 import { EmptyState } from "./EmptyState";
 
 export function MyIssuesView() {
   const { state } = useStore();
+  const openIssue = useOpenIssue();
   const mine = state.issues
     .filter((i) => i.assigneeId === state.currentUserId)
     .sort((a, b) => a.order - b.order);
@@ -19,7 +21,9 @@ export function MyIssuesView() {
             description="Issues assigned to you across all projects will appear here."
           />
         ) : (
-          mine.map((issue) => <IssueRow key={issue.id} issue={issue} />)
+          mine.map((issue) => (
+            <IssueRow key={issue.id} issue={issue} onOpenIssue={openIssue} />
+          ))
         )}
       </div>
     </section>

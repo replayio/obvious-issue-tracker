@@ -13,6 +13,7 @@ import { useNavigation } from "@/navigation";
 import { computeProgress, cycleStatus, fmtDate } from "@/lib/progress";
 import type { Cycle, ID } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { useOpenIssue } from "@/components/issue/useOpenIssue";
 import { IssueRow } from "./IssueRow";
 import { ViewHeader } from "./ViewHeader";
 import { EmptyState } from "./EmptyState";
@@ -138,6 +139,7 @@ interface CycleDetailProps {
 function CycleDetail({ cycle, onBack, onEdit, onDelete }: CycleDetailProps) {
   const { state } = useStore();
   const { statesById } = useLookups();
+  const openIssue = useOpenIssue();
   const status = cycleStatus(cycle.startDate, cycle.endDate);
 
   const issues = useMemo(
@@ -246,7 +248,7 @@ function CycleDetail({ cycle, onBack, onEdit, onDelete }: CycleDetailProps) {
                 </button>
                 {!collapsed.has(wfState.id) &&
                   groupIssues.map((issue) => (
-                    <IssueRow key={issue.id} issue={issue} />
+                    <IssueRow key={issue.id} issue={issue} onOpenIssue={openIssue} />
                   ))}
               </div>
             ))}
